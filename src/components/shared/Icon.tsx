@@ -1,0 +1,21 @@
+interface IconProps {
+  name: string
+  filled?: boolean
+  size?: number
+  className?: string
+}
+
+export function Icon({ name, filled = false, size = 24, className = '' }: IconProps) {
+  return (
+    <span
+      className={`material-symbols-outlined ${className}`}
+      style={{
+        fontSize: size,
+        fontVariationSettings: `'FILL' ${filled ? 1 : 0}, 'wght' 400, 'GRAD' 0, 'opsz' ${size <= 24 ? 24 : 40}`,
+      }}
+      aria-hidden="true"
+    >
+      {name}
+    </span>
+  )
+}
