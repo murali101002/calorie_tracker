@@ -16,10 +16,8 @@ const categories: { id: CategoryType; label: string }[] = [
 
 export function RecipeListPage() {
   const navigate = useNavigate()
-  const recipes = useRecipeStore((s) => s.recipes)
   const selectedCategory = useRecipeStore((s) => s.selectedCategory)
   const setCategory = useRecipeStore((s) => s.setCategory)
-  const seedSampleData = useRecipeStore((s) => s.seedSampleData)
   const getFilteredRecipes = useRecipeStore((s) => s.getFilteredRecipes)
   const getRecipeTotals = useRecipeStore((s) => s.getRecipeTotals)
 

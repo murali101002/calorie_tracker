@@ -7,7 +7,6 @@ interface MacroCardProps {
   unit: string
   label: string
   progress: number
-  iconBgColor: string
   iconColor: string
   barColor: string
 }
@@ -18,7 +17,6 @@ export function MacroCard({
   unit,
   label,
   progress,
-  iconBgColor,
   iconColor,
   barColor,
 }: MacroCardProps) {
