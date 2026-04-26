@@ -29,7 +29,7 @@ export function CaloriesRemainingCard({ date }: CaloriesRemainingCardProps) {
         </div>
         <div className="relative w-20 h-20 flex items-center justify-center">
           <svg className="w-full h-full transform -rotate-90">
-            <circle cx="40" cy="40" fill="transparent" r="34" stroke="#e5eeff" strokeWidth="8" />
+            <circle cx="40" cy="40" fill="transparent" r="34" stroke="#f1f5f9" strokeWidth="8" />
             <circle
               cx="40" cy="40" fill="transparent" r="34"
               stroke={isOver ? '#ba1a1a' : '#22c55e'}
@@ -48,8 +48,8 @@ export function CaloriesRemainingCard({ date }: CaloriesRemainingCardProps) {
             <span className="text-outline">Protein</span>
             <span className="text-on-background">{Math.round(progress.protein.current)}g</span>
           </div>
-          <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
-            <div className="h-full bg-macro-protein rounded-full" style={{ width: `${Math.round(progress.protein.pct * 100)}%` }} />
+          <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.round(progress.protein.pct * 100)}%` }} />
           </div>
         </div>
         <div className="space-y-2">
@@ -57,8 +57,8 @@ export function CaloriesRemainingCard({ date }: CaloriesRemainingCardProps) {
             <span className="text-outline">Carbs</span>
             <span className="text-on-background">{Math.round(progress.carbs.current)}g</span>
           </div>
-          <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
-            <div className="h-full bg-macro-carbs rounded-full" style={{ width: `${Math.round(progress.carbs.pct * 100)}%` }} />
+          <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full bg-orange-400 rounded-full" style={{ width: `${Math.round(progress.carbs.pct * 100)}%` }} />
           </div>
         </div>
         <div className="space-y-2">
@@ -66,8 +66,8 @@ export function CaloriesRemainingCard({ date }: CaloriesRemainingCardProps) {
             <span className="text-outline">Fat</span>
             <span className="text-on-background">{Math.round(progress.fat.current)}g</span>
           </div>
-          <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
-            <div className="h-full bg-macro-fat rounded-full" style={{ width: `${Math.round(progress.fat.pct * 100)}%` }} />
+          <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full bg-red-500 rounded-full" style={{ width: `${Math.round(progress.fat.pct * 100)}%` }} />
           </div>
         </div>
       </div>

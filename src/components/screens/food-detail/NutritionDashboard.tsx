@@ -18,18 +18,18 @@ export function NutritionDashboard({
   return (
     <div className="grid grid-cols-12 gap-4">
       {/* Main Calories Card */}
-      <div className="col-span-12 md:col-span-5 bg-primary-container text-white p-6 rounded-2xl
+      <div className="col-span-12 md:col-span-4 bg-primary-container text-white p-6 rounded-2xl
         flex flex-col items-center justify-center relative overflow-hidden">
         <div className="absolute -right-4 -top-4 opacity-10">
           <span className="material-symbols-outlined text-[120px]">bolt</span>
         </div>
         <p className="text-label-lg mb-1 opacity-90">Energy</p>
-        <h2 className="text-[56px] font-semibold leading-none">{energy}</h2>
+        <h2 className="text-[56px] font-headline-lg leading-none">{energy}</h2>
         <p className="text-label-lg tracking-[0.2em] mt-1">KCAL</p>
       </div>
 
       {/* Macro Grid */}
-      <div className="col-span-12 md:col-span-7 grid grid-cols-2 gap-4">
+      <div className="col-span-12 md:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-4">
         <MacroMini
           icon="fitness_center"
           iconColor="text-macro-protein"

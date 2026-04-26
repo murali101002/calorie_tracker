@@ -34,7 +34,7 @@ export function RecipeListPage() {
 
   return (
     <PageShell>
-      <div className="pt-6 space-y-6">
+      <div className="space-y-4">
         {/* Search */}
         <SearchInput
           value={searchQuery}

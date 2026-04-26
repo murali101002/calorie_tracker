@@ -15,7 +15,7 @@ export function SearchInput({ value, onChange, placeholder, onFilter }: SearchIn
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full h-12 pl-12 pr-4 bg-surface-container-lowest border border-outline-variant
-          rounded-full text-body-md text-on-background placeholder:text-outline-variant
+          rounded-full text-body-md text-on-background placeholder:text-surface-dim
           focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all"
       />
       {onFilter && (

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #006e2f;
   --color-primary-container: #22c55e;
@@ -50,7 +52,7 @@
 
   --color-macro-protein: #3b82f6;
   --color-macro-carbs: #f97316;
-  --color-macro-fat: #facc15;
+  --color-macro-fat: #dc2626;
 
   --font-sans: 'Lexend', sans-serif;
 

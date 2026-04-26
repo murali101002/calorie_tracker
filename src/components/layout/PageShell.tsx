@@ -32,9 +32,9 @@ export function PageShell({ children }: PageShellProps) {
   }
 
   return (
-    <div className="min-h-dvh bg-background text-on-background pb-32">
+    <div className="min-h-dvh bg-background text-on-background pb-24">
       <TopNav />
-      <main className="max-w-md mx-auto px-margin-mobile">
+      <main className="max-w-2xl mx-auto pt-6 px-margin-mobile">
         {children}
       </main>
       {showBottomNav && <BottomNav />}

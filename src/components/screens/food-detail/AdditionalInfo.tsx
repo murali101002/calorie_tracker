@@ -16,7 +16,7 @@ export function AdditionalInfo({ items }: AdditionalInfoProps) {
           <div
             key={i}
             className={`flex justify-between items-center py-2 ${
-              i < items.length - 1 ? 'border-b border-outline-variant/50' : ''
+              i < items.length - 1 ? 'border-b border-outline-variant' : ''
             }`}
           >
             <span className="text-body-md text-outline">{item.label}</span>

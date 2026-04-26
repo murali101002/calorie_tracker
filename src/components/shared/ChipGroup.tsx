@@ -19,7 +19,7 @@ export function ChipGroup({ items, selectedId, onSelect, className = '' }: ChipG
               active:scale-95 cursor-pointer
               ${selected
                 ? 'bg-primary-container text-white shadow-md'
-                : 'bg-surface-container-lowest border border-outline-variant text-outline hover:border-primary-container'
+                : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-primary-container'
               }`}
           >
             {item.label}

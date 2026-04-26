@@ -19,9 +19,9 @@ export function DateNavigator({ date, onPrev, onNext, canGoNext, statusMessage }
       <button
         type="button"
         onClick={onPrev}
-        className="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest
-          shadow-sm border border-outline-variant/20 cursor-pointer
-          hover:bg-surface-container-low transition-colors"
+        className="w-10 h-10 flex items-center justify-center rounded-full bg-white
+          shadow-sm border border-gray-100 cursor-pointer
+          hover:bg-gray-50 transition-colors"
       >
         <span className="material-symbols-outlined text-primary">chevron_left</span>
       </button>
@@ -36,8 +36,8 @@ export function DateNavigator({ date, onPrev, onNext, canGoNext, statusMessage }
         onClick={onNext}
         disabled={!canGoNext || isFuture}
         className={`w-10 h-10 flex items-center justify-center rounded-full
-          bg-surface-container-lowest shadow-sm border border-outline-variant/20
-          ${(!canGoNext || isFuture) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-surface-container-low transition-colors'}`}
+          bg-white shadow-sm border border-gray-100
+          ${(!canGoNext || isFuture) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50 transition-colors'}`}
       >
         <span className="material-symbols-outlined text-primary">chevron_right</span>
       </button>

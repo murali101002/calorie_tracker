@@ -78,7 +78,7 @@ export function ServingInput({
                 className={`px-3 py-1.5 text-label-lg rounded-full active:scale-95
                   transition-all cursor-pointer
                   ${selected
-                    ? 'bg-primary-container text-white'
+                    ? 'bg-primary-container text-on-primary-container'
                     : 'bg-surface text-outline border border-outline-variant hover:border-primary'
                   }`}
               >

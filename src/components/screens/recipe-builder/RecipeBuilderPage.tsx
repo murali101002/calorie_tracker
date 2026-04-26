@@ -161,8 +161,8 @@ export function RecipeBuilderPage() {
           <div className="bg-primary-container/10 border border-primary-container/20 rounded-2xl p-6">
             <div className="flex justify-between items-end mb-4">
               <div>
-                <h3 className="text-label-sm text-primary/70 uppercase">Total Calories</h3>
-                <p className="text-headline-lg text-primary">{totals.calories} kcal</p>
+                <h3 className="text-label-sm text-on-primary-container/70 uppercase">Total Calories</h3>
+                <p className="text-headline-lg text-on-primary-container">{totals.calories} kcal</p>
               </div>
               <div className="bg-primary-container text-white px-3 py-1 rounded-full text-label-sm">
                 Per Serving
@@ -170,24 +170,24 @@ export function RecipeBuilderPage() {
             </div>
             <div className="grid grid-cols-3 gap-4 pt-4 border-t border-primary-container/10">
               <div className="text-center">
-                <p className="text-label-sm text-primary/60">Protein</p>
-                <p className="text-body-lg font-bold text-primary">{totals.protein}g</p>
+                <p className="text-label-sm text-on-primary-container/60">Protein</p>
+                <p className="text-body-lg font-bold text-on-primary-container">{totals.protein}g</p>
                 <div className="w-full bg-white/50 h-1.5 rounded-full mt-1 overflow-hidden">
-                  <div className="bg-primary-container h-full rounded-full" style={{ width: '45%' }} />
+                  <div className="bg-primary-container h-full rounded-full" style={{ width: `${totals.calories > 0 ? Math.round((totals.protein * 4 / totals.calories) * 100) : 0}%` }} />
                 </div>
               </div>
               <div className="text-center">
-                <p className="text-label-sm text-primary/60">Carbs</p>
-                <p className="text-body-lg font-bold text-primary">{totals.carbs}g</p>
+                <p className="text-label-sm text-on-primary-container/60">Carbs</p>
+                <p className="text-body-lg font-bold text-on-primary-container">{totals.carbs}g</p>
                 <div className="w-full bg-white/50 h-1.5 rounded-full mt-1 overflow-hidden">
-                  <div className="bg-primary-container h-full rounded-full" style={{ width: '75%' }} />
+                  <div className="bg-primary-container h-full rounded-full" style={{ width: `${totals.calories > 0 ? Math.round((totals.carbs * 4 / totals.calories) * 100) : 0}%` }} />
                 </div>
               </div>
               <div className="text-center">
-                <p className="text-label-sm text-primary/60">Fat</p>
-                <p className="text-body-lg font-bold text-primary">{totals.fat}g</p>
+                <p className="text-label-sm text-on-primary-container/60">Fat</p>
+                <p className="text-body-lg font-bold text-on-primary-container">{totals.fat}g</p>
                 <div className="w-full bg-white/50 h-1.5 rounded-full mt-1 overflow-hidden">
-                  <div className="bg-primary-container h-full rounded-full" style={{ width: '30%' }} />
+                  <div className="bg-primary-container h-full rounded-full" style={{ width: `${totals.calories > 0 ? Math.round((totals.fat * 9 / totals.calories) * 100) : 0}%` }} />
                 </div>
               </div>
             </div>
@@ -199,7 +199,7 @@ export function RecipeBuilderPage() {
           type="button"
           onClick={handleSave}
           disabled={!name.trim()}
-          className="w-full bg-primary-container text-white font-semibold text-body-lg py-4 rounded-full
+          className="w-full bg-primary-container text-white font-headline-md text-body-lg py-4 rounded-full
             shadow-lg active:scale-95 transition-all cursor-pointer
             disabled:opacity-40 disabled:cursor-not-allowed"
         >

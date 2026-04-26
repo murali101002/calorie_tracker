@@ -40,12 +40,12 @@ export function MealSection({ mealType, entries, onAdd, onEntryClick }: MealSect
             <div
               key={entry.id}
               onClick={() => onEntryClick(entry.id)}
-              className="bg-surface-container-lowest p-4 rounded-2xl shadow-sm flex items-center
-                justify-between border border-transparent hover:border-primary-container/20
+              className="bg-white p-4 rounded-2xl shadow-sm flex items-center
+                justify-between border border-transparent hover:border-green-100
                 transition-colors cursor-pointer active:scale-[0.98]"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
                   <span className="material-symbols-outlined text-primary">{entry.icon}</span>
                 </div>
                 <div>

@@ -9,6 +9,7 @@ const router = createBrowserRouter([
   { path: '/', element: <DailyLogPage /> },
   { path: '/scan', element: <BarcodeScannerPage /> },
   { path: '/food/:foodId', element: <FoodDetailPage /> },
+  { path: '/food-detail', element: <FoodDetailPage /> },
   { path: '/recipes', element: <RecipeListPage /> },
   { path: '/recipes/new', element: <RecipeBuilderPage /> },
   { path: '/recipes/:recipeId/edit', element: <RecipeBuilderPage /> },

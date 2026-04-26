@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { DetailTopNav } from '../../layout/DetailTopNav'
 import { ServingInput } from './ServingInput'
 import { NutritionDashboard } from './NutritionDashboard'
@@ -7,17 +7,19 @@ import { AdditionalInfo } from './AdditionalInfo'
 import { sampleFoods } from '../../../data/sampleFoods'
 import { useFoodLogStore } from '../../../stores/useFoodLogStore'
 import { useUserStore } from '../../../stores/useUserStore'
-import type { ServingUnit, MealType } from '../../../types'
+import type { ServingUnit, MealType, FoodProduct } from '../../../types'
 
 export function FoodDetailPage() {
   const { foodId } = useParams<{ foodId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const addEntry = useFoodLogStore((s) => s.addEntry)
   const goals = useUserStore((s) => s.goals)
   const updateSettings = useUserStore((s) => s.updateSettings)
   const favorites = useUserStore((s) => s.settings.favoriteProducts)
 
-  const food = sampleFoods.find((f) => f.id === foodId) ?? sampleFoods[0]
+  const scannedProduct = (location.state as { product?: FoodProduct } | null)?.product
+  const food = scannedProduct ?? sampleFoods.find((f) => f.id === foodId) ?? sampleFoods[0]
 
   const [amount, setAmount] = useState(food.servingSize)
   const [unit, setUnit] = useState<ServingUnit>(food.servingUnit)
