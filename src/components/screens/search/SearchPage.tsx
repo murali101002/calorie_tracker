@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { DetailTopNav } from '../../layout/DetailTopNav'
 import { ManualEntrySheet } from '../daily-log/ManualEntrySheet'
-import { mapUSDAFood } from '../../../utils/mapUSDA'
+import { mapEdamamHint } from '../../../utils/mapEdamam'
 import { getAiNutritionEstimate, aiEstimateToFoodProduct } from '../../../utils/aiNutrition'
 import type { FoodProduct } from '../../../types'
 
@@ -58,10 +58,11 @@ export function SearchPage() {
     setAiProduct(null)
     setAiError(null)
 
-    const apiKey = import.meta.env.VITE_USDA_API_KEY as string
+    const appId = import.meta.env.VITE_EDAMAMA_APP_ID as string
+    const appKey = import.meta.env.VITE_EDAMAMA_APP_KEY as string
 
-    if (!apiKey) {
-      setError('USDA API key not configured. Add VITE_USDA_API_KEY to your .env file.')
+    if (!appId || !appKey) {
+      setError('Edamam API not configured. Add VITE_EDAMAMA_APP_ID and VITE_EDAMAMA_APP_KEY to your .env file.')
       setResults([])
       setLoading(false)
       return
@@ -69,25 +70,16 @@ export function SearchPage() {
 
     try {
       const res = await fetch(
-        `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${encodeURIComponent(apiKey)}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            query: term,
-            dataType: ['Foundation', 'SR Legacy', 'Branded'],
-            pageSize: 20,
-          }),
-          signal: controller.signal,
-        },
+        `https://api.edamam.com/api/food-database/v2/parser?app_id=${encodeURIComponent(appId)}&app_key=${encodeURIComponent(appKey)}&ingr=${encodeURIComponent(term)}`,
+        { signal: controller.signal },
       )
       if (!res.ok) throw new Error('Network error')
       const json = await res.json()
 
-      const foods = (json.foods ?? []) as Record<string, unknown>[]
+      const hints = (json.hints ?? []) as Record<string, unknown>[]
 
-      const results: SearchResult[] = foods.map((raw) => {
-        const product = mapUSDAFood(raw as any)
+      const results: SearchResult[] = hints.map((raw) => {
+        const product = mapEdamamHint(raw as any)
         return { product, hasNutrition: product.calories > 0 }
       })
 
