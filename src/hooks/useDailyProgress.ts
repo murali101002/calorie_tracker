@@ -1,6 +1,9 @@
 import { useRef } from 'react'
 import { useFoodLogStore } from '../stores/useFoodLogStore'
 import { useUserStore } from '../stores/useUserStore'
+import type { DailyLogEntry } from '../types'
+
+const EMPTY_ENTRIES: DailyLogEntry[] = []
 
 interface MacroProgress {
   current: number
@@ -23,8 +26,8 @@ function pct(current: number, goal: number): number {
 }
 
 export function useDailyProgress(date: string): DailyProgress {
-  // Use stringified data from stores so selectors return primitives (stable comparison)
-  const rawEntries = useFoodLogStore((s) => s.entries[date] ?? [])
+  // Stable empty array reference prevents selectors returning new [] every store update
+  const rawEntries = useFoodLogStore((s) => s.entries[date] ?? EMPTY_ENTRIES)
   const goals = useUserStore((s) => s.goals)
 
   // Compute totals locally instead of via store method (avoids new object in selector)

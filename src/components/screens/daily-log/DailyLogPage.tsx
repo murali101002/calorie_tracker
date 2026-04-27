@@ -20,7 +20,6 @@ export function DailyLogPage() {
   const getEntriesByMeal = useFoodLogStore((s) => s.getEntriesByMeal)
   const getEntriesForDate = useFoodLogStore((s) => s.getEntriesForDate)
   const entries = useFoodLogStore((s) => s.entries)
-  const addEntry = useFoodLogStore((s) => s.addEntry)
   const progress = useDailyProgress(activeDate)
 
   const [showCalendar, setShowCalendar] = useState(false)
@@ -52,7 +51,8 @@ export function DailyLogPage() {
 
   const handleCopyLog = useCallback(
     (fromDate: string) => {
-      const sourceEntries = entries[fromDate] ?? []
+      const state = useFoodLogStore.getState()
+      const sourceEntries = state.entries[fromDate] ?? []
       if (sourceEntries.length === 0) return
 
       const now = new Date().toISOString()
@@ -62,11 +62,16 @@ export function DailyLogPage() {
         loggedAt: now,
       }))
 
-      copiedEntries.forEach((entry) => addEntry(entry))
-
-      setActiveDate(todayKey)
+      // Batch all entries + date change into a single store update
+      useFoodLogStore.setState((s) => ({
+        entries: {
+          ...s.entries,
+          [todayKey]: [...(s.entries[todayKey] ?? []), ...copiedEntries],
+        },
+        activeDate: todayKey,
+      }))
     },
-    [entries, addEntry, todayKey, setActiveDate],
+    [todayKey],
   )
 
   const meals: MealType[] = ['breakfast', 'lunch', 'dinner']

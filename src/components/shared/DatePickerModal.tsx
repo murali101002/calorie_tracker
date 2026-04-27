@@ -104,8 +104,9 @@ export function DatePickerModal({
 
   function handleDayClick(dateKey: string, isDisabled: boolean) {
     if (isDisabled) return
-    onSelectDate(dateKey)
     onClose()
+    // Defer store update so React processes the close before the date change re-render
+    queueMicrotask(() => onSelectDate(dateKey))
   }
 
   function handleCopyConfirm() {

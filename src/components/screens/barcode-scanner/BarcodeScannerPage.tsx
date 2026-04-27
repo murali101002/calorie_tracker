@@ -108,8 +108,11 @@ export function BarcodeScannerPage() {
 
   useEffect(() => {
     startScanner()
-    return () => { stopScanner() }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    return () => {
+      startedRef.current = false
+      stopScanner()
+    }
+  }, [startScanner, stopScanner])
 
   const toggleFlash = useCallback(async () => {
     try {
