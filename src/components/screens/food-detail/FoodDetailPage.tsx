@@ -84,7 +84,7 @@ export function FoodDetailPage() {
         {/* Hero Branding Section */}
         <section className="mb-8 flex items-start gap-4">
           <div className="relative h-24 w-24 rounded-2xl overflow-hidden shrink-0 bg-surface-container-low shadow-sm">
-            <img alt={food.name} className="h-full w-full object-cover" src={food.imageUrl} />
+            <img alt={food.name} className="h-full w-full object-cover" src={food.imageUrl} onError={(e) => { (e.target as HTMLImageElement).src = '/fallback-food.png' }} />
           </div>
           <div className="flex flex-col justify-center h-24">
             <p className="text-label-lg text-primary uppercase tracking-wider mb-1">{food.brand}</p>

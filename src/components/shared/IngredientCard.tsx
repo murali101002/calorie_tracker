@@ -13,7 +13,7 @@ export function IngredientCard({ imageUrl, name, amount, calories, onRemove }: I
       style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.04)' }}
     >
       <div className="w-12 h-12 rounded-lg bg-surface-container overflow-hidden shrink-0">
-        <img alt={name} className="w-full h-full object-cover" src={imageUrl} loading="lazy" />
+        <img alt={name} className="w-full h-full object-cover" src={imageUrl} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = '/fallback-food.png' }} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-body-lg font-semibold">{name}</p>
