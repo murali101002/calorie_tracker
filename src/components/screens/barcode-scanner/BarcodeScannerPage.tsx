@@ -40,10 +40,14 @@ export function BarcodeScannerPage() {
   const startedRef = useRef(false)
 
   const stopScanner = useCallback(async () => {
-    if (scannerRef.current) {
-      try { await scannerRef.current.stop() } catch { /* ok */ }
-      try { await scannerRef.current.clear() } catch { /* ok */ }
-      scannerRef.current = null
+    const scanner = scannerRef.current
+    if (scanner) {
+      try { await scanner.stop() } catch { /* ok */ }
+      try { await scanner.clear() } catch { /* ok */ }
+      // Only clear ref if it still points to this scanner
+      if (scannerRef.current === scanner) {
+        scannerRef.current = null
+      }
     }
     setIsScanning(false)
   }, [])
@@ -112,7 +116,7 @@ export function BarcodeScannerPage() {
       startedRef.current = false
       stopScanner()
     }
-  }, [startScanner, stopScanner])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleFlash = useCallback(async () => {
     try {
