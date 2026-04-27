@@ -56,8 +56,13 @@ export function BarcodeScannerPage() {
       const scanner = new Html5Qrcode('scanner-viewfinder')
       scannerRef.current = scanner
       await scanner.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 260, height: 180 }, aspectRatio: 1 },
+        {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 3840 },
+          height: { ideal: 2160 },
+          aspectRatio: { ideal: 16 / 9 },
+        },
+        { fps: 10, qrbox: { width: 260, height: 180 }, aspectRatio: 1.777 },
         async (decodedText: string) => {
           await stopScanner()
           try {

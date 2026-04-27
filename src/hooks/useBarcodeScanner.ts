@@ -26,7 +26,12 @@ export function useBarcodeScanner({
       scannerRef.current = scanner
 
       await scanner.start(
-        { facingMode: 'environment' },
+        {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 3840 },
+          height: { ideal: 2160 },
+          aspectRatio: { ideal: 16 / 9 },
+        },
         {
           fps: 10,
           qrbox: { width: qrboxWidth, height: qrboxHeight },

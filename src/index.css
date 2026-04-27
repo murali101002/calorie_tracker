@@ -122,6 +122,17 @@ body {
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Scanner: full-resolution video, no downscaling */
+#scanner-viewfinder {
+  width: 100% !important;
+  height: 100% !important;
+}
+#scanner-viewfinder video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
 @keyframes scan-line {
   0% { top: 0; }
   50% { top: calc(100% - 2px); }
