@@ -5,7 +5,6 @@ const tabs = [
   { id: 'scan', label: 'Scan', icon: 'barcode_scanner', path: '/scan' },
   { id: 'recipes', label: 'Recipes', icon: 'menu_book', path: '/recipes' },
   { id: 'goals', label: 'Goals', icon: 'fitness_center', path: '/goals' },
-  { id: 'profile', label: 'Profile', icon: 'person', path: '/profile' },
 ] as const
 
 export function BottomNav() {
@@ -16,7 +15,6 @@ export function BottomNav() {
     if (location.pathname === '/scan') return 'scan'
     if (location.pathname.startsWith('/recipes')) return 'recipes'
     if (location.pathname === '/goals') return 'goals'
-    if (location.pathname === '/profile') return 'profile'
     return 'log'
   }
 

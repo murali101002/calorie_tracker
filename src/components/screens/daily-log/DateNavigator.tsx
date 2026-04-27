@@ -10,11 +10,8 @@ interface DateNavigatorProps {
 }
 
 export function DateNavigator({ date, onPrev, onNext, canGoNext, statusMessage, onCalendarOpen }: DateNavigatorProps) {
-  const today = new Date()
-  const isToday = date.toISOString().slice(0, 10) === today.toISOString().slice(0, 10)
-  const isFuture = date.getTime() > today.getTime()
+  const isFuture = date.getTime() > new Date().getTime()
 
-  const dayLabel = isToday ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'long' })
   const dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
   return (
@@ -29,19 +26,17 @@ export function DateNavigator({ date, onPrev, onNext, canGoNext, statusMessage, 
         <span className="material-symbols-outlined text-primary">chevron_left</span>
       </button>
 
-      <div className="flex items-center gap-2">
-        <div className="text-center">
-          <h1 className="text-headline-md">{dayLabel}, {dateLabel}</h1>
-          <p className="text-label-sm text-outline uppercase tracking-wider">{statusMessage}</p>
-        </div>
+      <div className="flex flex-col items-center">
         <button
           type="button"
           onClick={onCalendarOpen}
-          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50 active:scale-95 transition-all"
+          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50 active:scale-95 transition-all mb-0.5"
           aria-label="Open date picker"
         >
-          <CalendarDays size={20} className="text-gray-500" />
+          <CalendarDays size={22} className="text-primary" />
         </button>
+        <h1 className="text-headline-md">{dateLabel}</h1>
+        <p className="text-label-sm text-outline uppercase tracking-wider">{statusMessage}</p>
       </div>
 
       <button

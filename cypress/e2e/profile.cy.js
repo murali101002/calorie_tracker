@@ -57,9 +57,11 @@ describe('Profile Screen', () => {
       cy.contains('Save Profile').should('be.visible')
     })
 
-    it('bottom nav highlights Profile tab when on /profile', () => {
-      cy.visit('/profile')
-      cy.get('nav').contains('Profile').should('exist')
+    it('top nav avatar navigates to profile', () => {
+      cy.visit('/')
+      // Click the avatar/name button in the top nav
+      cy.get('header').find('button').first().click()
+      cy.url().should('include', '/profile')
     })
 
     it('can change name', () => {

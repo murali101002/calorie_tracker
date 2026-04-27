@@ -25,9 +25,8 @@ describe('Home Screen', () => {
   describe('Happy path', () => {
     it('loads today date in the header', () => {
       cy.visit('/')
-      // DateNavigator shows either "Today" or weekday name, followed by month/day
       cy.get('h1').should('be.visible').invoke('text').then((text) => {
-        expect(text).to.match(/(Today|[A-Z][a-z]+day), [A-Z][a-z]{2} \d{1,2}/)
+        expect(text).to.match(/[A-Z][a-z]{2} \d{1,2}/)
       })
     })
 
