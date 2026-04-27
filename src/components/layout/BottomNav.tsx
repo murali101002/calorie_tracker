@@ -21,7 +21,7 @@ export function BottomNav() {
   return (
     <nav className="fixed bottom-0 w-full z-50 rounded-t-2xl bg-white/95 backdrop-blur-md
       border-t border-gray-100 shadow-nav pb-[env(safe-area-inset-bottom,0px)]">
-      <div className="flex justify-around items-center h-20 px-2 max-w-md mx-auto">
+      <div className="flex justify-around items-center h-20 px-8 w-full">
         {tabs.map((tab) => {
           const active = tab.id === activeTab
           return (
