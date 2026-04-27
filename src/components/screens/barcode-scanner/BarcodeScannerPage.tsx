@@ -49,7 +49,7 @@ export function BarcodeScannerPage() {
             const json = await res.json()
             if (json.product) {
               const product = mapOpenFoodFacts(json.product)
-              navigate('/food-detail', { state: { product } })
+              navigate('/food-detail', { state: { product, source: 'barcode' } })
             } else {
               setError('Product not found, try searching manually')
               setTimeout(() => {

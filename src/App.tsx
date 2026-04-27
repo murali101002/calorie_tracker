@@ -14,7 +14,7 @@ const router = createBrowserRouter([
   { path: '/food/:foodId', element: <FoodDetailPage /> },
   { path: '/food-detail', element: <FoodDetailPage /> },
   { path: '/recipes', element: <RecipeListPage /> },
-  { path: '/recipes/new', element: <RecipeBuilderPage /> },
+  { path: '/recipes/new', element: <RecipeBuilderPage key="new" /> },
   { path: '/recipes/:recipeId/edit', element: <RecipeBuilderPage /> },
   { path: '/search', element: <SearchPage /> },
   { path: '/goals', element: <GoalsPage /> },

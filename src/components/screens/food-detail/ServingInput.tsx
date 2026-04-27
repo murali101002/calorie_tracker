@@ -4,7 +4,9 @@ const servingUnits: { id: ServingUnit; label: string }[] = [
   { id: 'cup', label: 'Cup (245g)' },
   { id: 'container', label: 'Container (150g)' },
   { id: 'ounce', label: 'Ounce (28g)' },
-  { id: 'gram', label: 'Grams (1g)' },
+  { id: 'gram', label: 'Grams' },
+  { id: 'ml', label: 'Milliliters' },
+  { id: 'fl_oz', label: 'Fluid Ounce' },
 ]
 
 const mealTypes: { id: MealType; label: string }[] = [
