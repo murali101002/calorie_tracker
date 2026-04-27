@@ -35,6 +35,7 @@ export function BarcodeScannerPage() {
   const [isScanning, setIsScanning] = useState(false)
   const [flashOn, setFlashOn] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [connecting, setConnecting] = useState(false)
   const [activeTab, setActiveTab] = useState<ScannerTab>('barcode')
   const scannerRef = useRef<Html5Qrcode | null>(null)
   const startedRef = useRef(false)
@@ -59,13 +60,10 @@ export function BarcodeScannerPage() {
     try {
       const scanner = new Html5Qrcode('scanner-viewfinder')
       scannerRef.current = scanner
+      // Use 1080p with fallback — 4K causes OverconstrainedError on most devices
+      setConnecting(true)
       await scanner.start(
-        {
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 3840 },
-          height: { ideal: 2160 },
-          aspectRatio: { ideal: 16 / 9 },
-        },
+        { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 260, height: 180 }, aspectRatio: 1.777 },
         async (decodedText: string) => {
           await stopScanner()
@@ -97,15 +95,19 @@ export function BarcodeScannerPage() {
         () => { /* scan frame processed, no action needed */ },
       )
       setIsScanning(true)
+      setConnecting(false)
     } catch (err: unknown) {
+      setConnecting(false)
       startedRef.current = false
-      const msg = err instanceof Error ? err.message : 'Failed to start camera'
+      const msg = err instanceof Error ? (err.message || String(err)) : 'Failed to start camera'
       if (msg.includes('NotAllowed') || msg.includes('Permission')) {
-        setError('Camera permission denied')
+        setError('Camera permission denied. Please allow camera access in your browser settings.')
       } else if (msg.includes('NotFound')) {
-        setError('No camera found on this device')
+        setError('No camera found on this device.')
+      } else if (msg.includes('Overconstrained') || msg.includes('constraint')) {
+        setError('Camera resolution not supported. Trying default settings...')
       } else {
-        setError(msg)
+        setError(msg || 'Camera failed to start. Please try again.')
       }
     }
   }, [navigate, stopScanner])
@@ -142,8 +144,8 @@ export function BarcodeScannerPage() {
       {/* Camera viewfinder */}
       <div id="scanner-viewfinder" className="absolute inset-0" />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] pointer-events-none" />
+      {/* Overlay — subtle tint to keep UI readable without darkening camera feed */}
+      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
 
       {/* Content layer */}
       <div className="relative z-10 flex flex-col h-full pointer-events-none">
@@ -195,12 +197,25 @@ export function BarcodeScannerPage() {
 
         {/* Instructions */}
         <div className="flex flex-col items-center text-center px-8 pb-4">
-          <p className="text-white font-bold text-[18px] drop-shadow-md tracking-wide">
-            Point at barcode
-          </p>
-          <p className="text-gray-300 text-[14px] mt-2 max-w-[260px]">
-            Align the barcode within the frame to scan automatically
-          </p>
+          {connecting ? (
+            <>
+              <p className="text-white font-bold text-[18px] drop-shadow-md tracking-wide">
+                Starting camera...
+              </p>
+              <p className="text-gray-300 text-[14px] mt-2 max-w-[260px]">
+                Allow camera access when prompted
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-white font-bold text-[18px] drop-shadow-md tracking-wide">
+                Point at barcode
+              </p>
+              <p className="text-gray-300 text-[14px] mt-2 max-w-[260px]">
+                Align the barcode within the frame to scan automatically
+              </p>
+            </>
+          )}
         </div>
 
         {/* Error toast */}
