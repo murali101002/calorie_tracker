@@ -1,4 +1,5 @@
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+export type ActivityLevel = 'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | 'athlete'
 export type CategoryType = 'all' | 'high-protein' | 'low-carb' | 'vegan'
 export type ServingUnit = 'cup' | 'container' | 'ounce' | 'gram'
 
@@ -90,6 +91,8 @@ export interface UserProfile {
   weight: number
   age: number
   gender: string
+  goalWeight: number
+  activityLevel: ActivityLevel
 }
 
 export interface UserSettings {

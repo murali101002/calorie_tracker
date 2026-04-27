@@ -4,6 +4,7 @@ import { BarcodeScannerPage } from './components/screens/barcode-scanner/Barcode
 import { FoodDetailPage } from './components/screens/food-detail/FoodDetailPage'
 import { RecipeListPage } from './components/screens/recipe-list/RecipeListPage'
 import { RecipeBuilderPage } from './components/screens/recipe-builder/RecipeBuilderPage'
+import { ProfilePage } from './components/screens/profile/ProfilePage'
 
 const router = createBrowserRouter([
   { path: '/', element: <DailyLogPage /> },
@@ -13,6 +14,7 @@ const router = createBrowserRouter([
   { path: '/recipes', element: <RecipeListPage /> },
   { path: '/recipes/new', element: <RecipeBuilderPage /> },
   { path: '/recipes/:recipeId/edit', element: <RecipeBuilderPage /> },
+  { path: '/profile', element: <ProfilePage /> },
 ])
 
 export default function App() {

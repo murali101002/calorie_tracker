@@ -22,6 +22,8 @@ export const useUserStore = create<UserState>()(
         weight: 72,
         age: 30,
         gender: 'male',
+        goalWeight: 70,
+        activityLevel: 'moderately_active',
       },
       goals: {
         calories: 2200,
