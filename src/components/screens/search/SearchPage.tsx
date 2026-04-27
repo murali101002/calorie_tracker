@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { DetailTopNav } from '../../layout/DetailTopNav'
 import { ManualEntrySheet } from '../daily-log/ManualEntrySheet'
-import { mapNutritionixCommon, mapNutritionixBranded } from '../../../utils/mapNutritionix'
+import { mapUSDAFood } from '../../../utils/mapUSDA'
 import { getAiNutritionEstimate, aiEstimateToFoodProduct } from '../../../utils/aiNutrition'
 import type { FoodProduct } from '../../../types'
 
@@ -58,11 +58,10 @@ export function SearchPage() {
     setAiProduct(null)
     setAiError(null)
 
-    const appId = import.meta.env.VITE_NUTRITIONIX_APP_ID as string
-    const appKey = import.meta.env.VITE_NUTRITIONIX_APP_KEY as string
+    const apiKey = import.meta.env.VITE_USDA_API_KEY as string
 
-    if (!appId || !appKey) {
-      setError('Nutritionix API not configured. Add VITE_NUTRITIONIX_APP_ID and VITE_NUTRITIONIX_APP_KEY to your .env file.')
+    if (!apiKey) {
+      setError('USDA API key not configured. Add VITE_USDA_API_KEY to your .env file.')
       setResults([])
       setLoading(false)
       return
@@ -70,29 +69,29 @@ export function SearchPage() {
 
     try {
       const res = await fetch(
-        `https://trackapi.nutritionix.com/v2/search/instant?query=${encodeURIComponent(term)}`,
+        `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${encodeURIComponent(apiKey)}`,
         {
-          headers: { 'x-app-id': appId, 'x-app-key': appKey },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: term,
+            dataType: ['Foundation', 'SR Legacy', 'Branded'],
+            pageSize: 20,
+          }),
           signal: controller.signal,
         },
       )
       if (!res.ok) throw new Error('Network error')
       const json = await res.json()
 
-      const common = (json.common ?? []) as Record<string, unknown>[]
-      const branded = (json.branded ?? []) as Record<string, unknown>[]
+      const foods = (json.foods ?? []) as Record<string, unknown>[]
 
-      const commonResults: SearchResult[] = common.map((raw) => ({
-        product: mapNutritionixCommon(raw as any),
-        hasNutrition: true,
-      }))
+      const results: SearchResult[] = foods.map((raw) => {
+        const product = mapUSDAFood(raw as any)
+        return { product, hasNutrition: product.calories > 0 }
+      })
 
-      const brandedResults: SearchResult[] = branded.map((raw) => ({
-        product: mapNutritionixBranded(raw as any),
-        hasNutrition: true,
-      }))
-
-      setResults([...commonResults, ...brandedResults])
+      setResults(results)
     } catch (err: unknown) {
       if (err instanceof DOMException && err.name === 'AbortError') return
       setError('Search unavailable. Add manually instead.')
