@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { DetailTopNav } from '../../layout/DetailTopNav'
 import { ManualEntrySheet } from '../daily-log/ManualEntrySheet'
-import { mapOpenFoodFacts } from '../../../utils/mapOpenFoodFacts'
+import { mapNutritionixCommon, mapNutritionixBranded } from '../../../utils/mapNutritionix'
 import { getAiNutritionEstimate, aiEstimateToFoodProduct } from '../../../utils/aiNutrition'
 import type { FoodProduct } from '../../../types'
 
@@ -17,6 +17,7 @@ export function SearchPage() {
   const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const inputRef = useRef<HTMLInputElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const abortRef = useRef<AbortController | null>(null)
 
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
@@ -36,6 +37,11 @@ export function SearchPage() {
   }, [])
 
   const doSearch = useCallback(async (term: string) => {
+    // Cancel any in-flight request
+    if (abortRef.current) {
+      abortRef.current.abort()
+    }
+
     if (!term.trim()) {
       setResults([])
       setHasSearched(false)
@@ -43,33 +49,58 @@ export function SearchPage() {
       return
     }
 
+    const controller = new AbortController()
+    abortRef.current = controller
+
     setLoading(true)
     setError(null)
     setHasSearched(true)
-    // Reset AI state on new search
     setAiProduct(null)
     setAiError(null)
 
+    const appId = import.meta.env.VITE_NUTRITIONIX_APP_ID as string
+    const appKey = import.meta.env.VITE_NUTRITIONIX_APP_KEY as string
+
+    if (!appId || !appKey) {
+      setError('Nutritionix API not configured. Add VITE_NUTRITIONIX_APP_ID and VITE_NUTRITIONIX_APP_KEY to your .env file.')
+      setResults([])
+      setLoading(false)
+      return
+    }
+
     try {
       const res = await fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(term)}&json=true&page_size=20`,
+        `https://trackapi.nutritionix.com/v2/search/instant?query=${encodeURIComponent(term)}`,
+        {
+          headers: { 'x-app-id': appId, 'x-app-key': appKey },
+          signal: controller.signal,
+        },
       )
       if (!res.ok) throw new Error('Network error')
       const json = await res.json()
-      const products = (json.products ?? []) as Record<string, unknown>[]
-      setResults(
-        products.map((raw) => {
-          const product = mapOpenFoodFacts(raw)
-          return {
-            product,
-            hasNutrition: product.calories > 0 || product.protein > 0 || product.carbs > 0 || product.fat > 0,
-          }
-        }),
-      )
-    } catch {
+
+      const common = (json.common ?? []) as Record<string, unknown>[]
+      const branded = (json.branded ?? []) as Record<string, unknown>[]
+
+      const commonResults: SearchResult[] = common.map((raw) => ({
+        product: mapNutritionixCommon(raw as any),
+        hasNutrition: true,
+      }))
+
+      const brandedResults: SearchResult[] = branded.map((raw) => ({
+        product: mapNutritionixBranded(raw as any),
+        hasNutrition: true,
+      }))
+
+      setResults([...commonResults, ...brandedResults])
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') return
       setError('Search unavailable. Add manually instead.')
       setResults([])
     } finally {
+      if (abortRef.current === controller) {
+        abortRef.current = null
+      }
       setLoading(false)
     }
   }, [])
@@ -78,7 +109,7 @@ export function SearchPage() {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
       doSearch(query)
-    }, 400)
+    }, 500)
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
@@ -224,11 +255,7 @@ export function SearchPage() {
                   <p className="text-body-sm text-outline truncate">
                     {r.product.brand || 'Generic'}
                   </p>
-                  {r.hasNutrition ? (
-                    <p className="text-label-sm text-primary mt-0.5">{r.product.calories} kcal / 100g</p>
-                  ) : (
-                    <p className="text-label-sm text-outline mt-0.5">Nutrition data unavailable</p>
-                  )}
+                  <p className="text-label-sm text-primary mt-0.5">{r.product.calories} kcal / serving</p>
                 </div>
                 <span className="material-symbols-outlined text-outline text-xl">chevron_right</span>
               </button>
