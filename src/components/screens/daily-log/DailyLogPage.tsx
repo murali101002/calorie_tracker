@@ -1,12 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageShell } from '../../layout/PageShell'
 import { DateNavigator } from './DateNavigator'
 import { CaloriesRemainingCard } from './CaloriesRemainingCard'
 import { MealSection } from './MealSection'
+import { DatePickerModal } from '../../shared/DatePickerModal'
 import { useFoodLogStore } from '../../../stores/useFoodLogStore'
 import { useDailyProgress } from '../../../hooks/useDailyProgress'
-import type { MealType } from '../../../types'
+import type { MealType, DailyLogEntry } from '../../../types'
 
 function toDateKey(date: Date): string {
   return date.toISOString().slice(0, 10)
@@ -18,7 +19,11 @@ export function DailyLogPage() {
   const setActiveDate = useFoodLogStore((s) => s.setActiveDate)
   const getEntriesByMeal = useFoodLogStore((s) => s.getEntriesByMeal)
   const getEntriesForDate = useFoodLogStore((s) => s.getEntriesForDate)
+  const entries = useFoodLogStore((s) => s.entries)
+  const addEntry = useFoodLogStore((s) => s.addEntry)
   const progress = useDailyProgress(activeDate)
+
+  const [showCalendar, setShowCalendar] = useState(false)
 
   useEffect(() => {
     const state = useFoodLogStore.getState()
@@ -45,6 +50,25 @@ export function DailyLogPage() {
     setActiveDate(toDateKey(d))
   }
 
+  const handleCopyLog = useCallback(
+    (fromDate: string) => {
+      const sourceEntries = entries[fromDate] ?? []
+      if (sourceEntries.length === 0) return
+
+      const now = new Date().toISOString()
+      const copiedEntries: DailyLogEntry[] = sourceEntries.map((e) => ({
+        ...e,
+        id: crypto.randomUUID(),
+        loggedAt: now,
+      }))
+
+      copiedEntries.forEach((entry) => addEntry(entry))
+
+      setActiveDate(todayKey)
+    },
+    [entries, addEntry, todayKey, setActiveDate],
+  )
+
   const meals: MealType[] = ['breakfast', 'lunch', 'dinner']
 
   return (
@@ -55,6 +79,7 @@ export function DailyLogPage() {
         onNext={handleNext}
         canGoNext={canGoNext}
         statusMessage={progress.statusMessage}
+        onCalendarOpen={() => setShowCalendar(true)}
       />
 
       <div className="mb-6">
@@ -75,6 +100,15 @@ export function DailyLogPage() {
           />
         ))}
       </div>
+
+      <DatePickerModal
+        open={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        selectedDate={activeDate}
+        onSelectDate={setActiveDate}
+        entries={entries}
+        onCopyLog={handleCopyLog}
+      />
     </PageShell>
   )
 }

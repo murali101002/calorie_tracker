@@ -1,12 +1,15 @@
+import { CalendarDays } from 'lucide-react'
+
 interface DateNavigatorProps {
   date: Date
   onPrev: () => void
   onNext: () => void
   canGoNext: boolean
   statusMessage: string
+  onCalendarOpen: () => void
 }
 
-export function DateNavigator({ date, onPrev, onNext, canGoNext, statusMessage }: DateNavigatorProps) {
+export function DateNavigator({ date, onPrev, onNext, canGoNext, statusMessage, onCalendarOpen }: DateNavigatorProps) {
   const today = new Date()
   const isToday = date.toISOString().slice(0, 10) === today.toISOString().slice(0, 10)
   const isFuture = date.getTime() > today.getTime()
@@ -26,9 +29,19 @@ export function DateNavigator({ date, onPrev, onNext, canGoNext, statusMessage }
         <span className="material-symbols-outlined text-primary">chevron_left</span>
       </button>
 
-      <div className="text-center">
-        <h1 className="text-headline-md">{dayLabel}, {dateLabel}</h1>
-        <p className="text-label-sm text-outline uppercase tracking-wider">{statusMessage}</p>
+      <div className="flex items-center gap-2">
+        <div className="text-center">
+          <h1 className="text-headline-md">{dayLabel}, {dateLabel}</h1>
+          <p className="text-label-sm text-outline uppercase tracking-wider">{statusMessage}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onCalendarOpen}
+          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50 active:scale-95 transition-all"
+          aria-label="Open date picker"
+        >
+          <CalendarDays size={20} className="text-gray-500" />
+        </button>
       </div>
 
       <button
