@@ -18,6 +18,7 @@ export interface DailyLogEntry {
   servingUnit: ServingUnit
   mealType: MealType
   loggedAt: string
+  source?: string
 }
 
 export interface DailyTotals {
@@ -75,6 +76,8 @@ export interface MacroGoals {
   carbs: number
   fat: number
   fiber: number
+  tdee: number
+  targetCalories: number
 }
 
 export interface MacroTotals {
@@ -93,6 +96,7 @@ export interface UserProfile {
   gender: string
   goalWeight: number
   activityLevel: ActivityLevel
+  preferences: string[]
 }
 
 export interface UserSettings {

@@ -18,7 +18,9 @@ export function FoodDetailPage() {
   const updateSettings = useUserStore((s) => s.updateSettings)
   const favorites = useUserStore((s) => s.settings.favoriteProducts)
 
-  const scannedProduct = (location.state as { product?: FoodProduct } | null)?.product
+  const routeState = location.state as { product?: FoodProduct; source?: string } | null
+  const scannedProduct = routeState?.product
+  const entrySource = routeState?.source
   const food = scannedProduct ?? sampleFoods.find((f) => f.id === foodId) ?? sampleFoods[0]
 
   const [amount, setAmount] = useState(food.servingSize)
@@ -51,10 +53,11 @@ export function FoodDetailPage() {
       servingUnit: unit,
       mealType: selectedMeal,
       loggedAt: new Date().toISOString(),
+      source: entrySource,
     }
     addEntry(entry)
     navigate('/', { replace: true })
-  }, [food, amount, unit, scaled, selectedMeal, addEntry, navigate])
+  }, [food, amount, unit, scaled, selectedMeal, addEntry, navigate, entrySource])
 
   const handleToggleFavorite = useCallback(() => {
     const newFavs = favorites.includes(food.id)
@@ -92,6 +95,16 @@ export function FoodDetailPage() {
             <p className="text-body-md text-outline">{food.tagline}</p>
           </div>
         </section>
+
+        {/* AI estimate disclaimer */}
+        {entrySource === 'ai_estimate' && (
+          <div className="mb-6 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+            <span className="material-symbols-outlined text-amber-500 text-xl shrink-0 mt-0.5">warning</span>
+            <p className="text-body-sm text-amber-800">
+              Nutritional values are AI-estimated approximations, not verified lab data. Use as a rough guide only.
+            </p>
+          </div>
+        )}
 
         {/* Serving & Meal */}
         <section className="mb-8">

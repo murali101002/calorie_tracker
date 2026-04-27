@@ -1,32 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Html5Qrcode } from 'html5-qrcode'
-import type { FoodProduct } from '../../../types'
-
-function mapOpenFoodFacts(raw: Record<string, unknown>): FoodProduct {
-  const p = (raw as Record<string, unknown>) ?? {}
-  const nutriments = (p.nutriments as Record<string, number>) ?? {}
-  const sugarsVal = nutriments.sugars_100g ?? 0
-  const sodiumVal = nutriments.sodium_100g ?? 0
-  return {
-    id: (p.code as string) ?? crypto.randomUUID(),
-    name: (p.product_name as string) || 'Unknown Product',
-    brand: (p.brands as string) || '',
-    tagline: (p.quantity as string) || '',
-    imageUrl: (p.image_url as string) || '',
-    servingSize: 100,
-    servingUnit: 'gram',
-    calories: Math.round((nutriments['energy-kcal_100g'] as number) ?? (nutriments.energy_100g as number) ?? 0),
-    protein: (nutriments.proteins_100g as number) ?? 0,
-    carbs: (nutriments.carbohydrates_100g as number) ?? 0,
-    fat: (nutriments.fat_100g as number) ?? 0,
-    fiber: (nutriments.fiber_100g as number) ?? 0,
-    sodium: Math.round(sodiumVal),
-    sugars: Math.round(sugarsVal * 10) / 10,
-    calcium: nutriments.calcium_100g != null ? `${Math.round(nutriments.calcium_100g)}% DV` : '',
-    isFavorite: false,
-  }
-}
+import { mapOpenFoodFacts } from '../../../utils/mapOpenFoodFacts'
 
 type ScannerTab = 'barcode' | 'vision' | 'recent'
 
@@ -230,7 +205,7 @@ export function BarcodeScannerPage() {
           {/* Search manually button */}
           <button
             type="button"
-            onClick={() => navigate('/food/greek-yogurt')}
+            onClick={() => navigate('/search')}
             className="flex items-center justify-center gap-3 w-[calc(100%-32px)] h-14
               bg-[#22c55e] text-black font-semibold text-[16px] rounded-full shadow-lg
               active:scale-95 transition-transform mb-4"

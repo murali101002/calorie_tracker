@@ -5,6 +5,7 @@ import { DateNavigator } from './DateNavigator'
 import { CaloriesRemainingCard } from './CaloriesRemainingCard'
 import { MealSection } from './MealSection'
 import { DatePickerModal } from '../../shared/DatePickerModal'
+import { ManualEntrySheet } from './ManualEntrySheet'
 import { useFoodLogStore } from '../../../stores/useFoodLogStore'
 import { useDailyProgress } from '../../../hooks/useDailyProgress'
 import type { MealType, DailyLogEntry } from '../../../types'
@@ -23,6 +24,7 @@ export function DailyLogPage() {
   const progress = useDailyProgress(activeDate)
 
   const [showCalendar, setShowCalendar] = useState(false)
+  const [sheetMeal, setSheetMeal] = useState<MealType | null>(null)
 
   useEffect(() => {
     const state = useFoodLogStore.getState()
@@ -97,7 +99,7 @@ export function DailyLogPage() {
             key={meal}
             mealType={meal}
             entries={getEntriesByMeal(activeDate, meal)}
-            onAdd={() => navigate('/scan')}
+            onAdd={() => setSheetMeal(meal)}
             onEntryClick={(id) => {
               const entry = getEntriesForDate(activeDate).find((e) => e.id === id)
               if (entry) navigate(`/food/${entry.foodId}`)
@@ -113,6 +115,12 @@ export function DailyLogPage() {
         onSelectDate={setActiveDate}
         entries={entries}
         onCopyLog={handleCopyLog}
+      />
+
+      <ManualEntrySheet
+        open={sheetMeal !== null}
+        mealType={sheetMeal ?? 'breakfast'}
+        onClose={() => setSheetMeal(null)}
       />
     </PageShell>
   )

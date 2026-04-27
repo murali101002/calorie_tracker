@@ -5,6 +5,8 @@ import { FoodDetailPage } from './components/screens/food-detail/FoodDetailPage'
 import { RecipeListPage } from './components/screens/recipe-list/RecipeListPage'
 import { RecipeBuilderPage } from './components/screens/recipe-builder/RecipeBuilderPage'
 import { ProfilePage } from './components/screens/profile/ProfilePage'
+import { GoalsPage } from './components/screens/goals/GoalsPage'
+import { SearchPage } from './components/screens/search/SearchPage'
 
 const router = createBrowserRouter([
   { path: '/', element: <DailyLogPage /> },
@@ -14,6 +16,8 @@ const router = createBrowserRouter([
   { path: '/recipes', element: <RecipeListPage /> },
   { path: '/recipes/new', element: <RecipeBuilderPage /> },
   { path: '/recipes/:recipeId/edit', element: <RecipeBuilderPage /> },
+  { path: '/search', element: <SearchPage /> },
+  { path: '/goals', element: <GoalsPage /> },
   { path: '/profile', element: <ProfilePage /> },
 ])
 

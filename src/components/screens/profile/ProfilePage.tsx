@@ -34,6 +34,11 @@ const activityOptions: { id: ActivityLevel; label: string; description: string }
   { id: 'athlete', label: 'Athlete', description: '2x/day' },
 ]
 
+const dietaryTags = [
+  'Vegetarian', 'Vegan', 'Pescatarian', 'Gluten-Free', 'Dairy-Free',
+  'Keto', 'Paleo', 'Halal', 'Kosher', 'Nut Allergy', 'Low Sodium', 'Diabetic-Friendly',
+] as const
+
 export function ProfilePage() {
   const profile = useUserStore((s) => s.profile)
   const updateProfile = useUserStore((s) => s.updateProfile)
@@ -53,6 +58,7 @@ export function ProfilePage() {
   const [goalWeight, setGoalWeight] = useState(String(profile.goalWeight))
 
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>(profile.activityLevel)
+  const [preferences, setPreferences] = useState<string[]>(profile.preferences ?? [])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [toastVisible, setToastVisible] = useState(false)
 
@@ -119,10 +125,11 @@ export function ProfilePage() {
       weight: weightKg,
       goalWeight: goalKg,
       activityLevel,
+      preferences,
     })
     setToastVisible(true)
     setErrors({})
-  }, [name, age, sex, isHeightMetric, heightCm, heightFt, heightIn, isWeightMetric, weight, goalWeight, activityLevel, updateProfile, validate])
+  }, [name, age, sex, isHeightMetric, heightCm, heightFt, heightIn, isWeightMetric, weight, goalWeight, activityLevel, preferences, updateProfile, validate])
 
   const toggleHeightUnit = useCallback(() => {
     if (isHeightMetric) {
@@ -155,6 +162,12 @@ export function ProfilePage() {
     }
     setIsWeightMetric((p) => !p)
   }, [isWeightMetric, weight, goalWeight])
+
+  const togglePreference = useCallback((tag: string) => {
+    setPreferences((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    )
+  }, [])
 
   return (
     <PageShell>
@@ -381,6 +394,30 @@ export function ProfilePage() {
                     <p className="text-body-md font-semibold">{opt.label}</p>
                     <p className="text-label-sm text-outline">{opt.description}</p>
                   </div>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* Dietary Preferences */}
+        <section className="space-y-4">
+          <h2 className="text-body-lg font-semibold text-on-background">Dietary Preferences</h2>
+          <div className="flex flex-wrap gap-2">
+            {dietaryTags.map((tag) => {
+              const selected = preferences.includes(tag)
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => togglePreference(tag)}
+                  className={`px-4 py-2 rounded-full text-label-sm font-medium transition-all active:scale-95 cursor-pointer ${
+                    selected
+                      ? 'bg-primary-container text-white'
+                      : 'bg-surface-container-lowest border border-outline-variant text-on-background'
+                  }`}
+                >
+                  {tag}
                 </button>
               )
             })}

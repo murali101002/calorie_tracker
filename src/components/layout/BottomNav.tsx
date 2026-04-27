@@ -4,6 +4,7 @@ const tabs = [
   { id: 'log', label: 'Log', icon: 'calendar_today', path: '/' },
   { id: 'scan', label: 'Scan', icon: 'barcode_scanner', path: '/scan' },
   { id: 'recipes', label: 'Recipes', icon: 'menu_book', path: '/recipes' },
+  { id: 'goals', label: 'Goals', icon: 'fitness_center', path: '/goals' },
   { id: 'profile', label: 'Profile', icon: 'person', path: '/profile' },
 ] as const
 
@@ -14,6 +15,7 @@ export function BottomNav() {
   function getActiveTab(): string {
     if (location.pathname === '/scan') return 'scan'
     if (location.pathname.startsWith('/recipes')) return 'recipes'
+    if (location.pathname === '/goals') return 'goals'
     if (location.pathname === '/profile') return 'profile'
     return 'log'
   }
@@ -23,7 +25,7 @@ export function BottomNav() {
   return (
     <nav className="fixed bottom-0 w-full z-50 rounded-t-2xl bg-white/95 backdrop-blur-md
       border-t border-gray-100 shadow-nav pb-[env(safe-area-inset-bottom,0px)]">
-      <div className="flex justify-center gap-8 items-center h-20 w-full px-2">
+      <div className="flex justify-center gap-4 items-center h-20 w-full px-2">
         {tabs.map((tab) => {
           const active = tab.id === activeTab
           return (

@@ -53,7 +53,7 @@ describe('Barcode Scanner', () => {
         },
       })
       cy.contains('Search manually').click({ force: true })
-      cy.url().should('include', '/food/')
+      cy.url().should('include', '/search')
     })
   })
 
