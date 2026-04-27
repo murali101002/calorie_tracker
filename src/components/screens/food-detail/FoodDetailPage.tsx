@@ -19,9 +19,10 @@ export function FoodDetailPage() {
   const updateSettings = useUserStore((s) => s.updateSettings)
   const favorites = useUserStore((s) => s.settings.favoriteProducts)
 
-  const routeState = location.state as { product?: FoodProduct; source?: string } | null
+  const routeState = location.state as { product?: FoodProduct; source?: string; returnTo?: string } | null
   const scannedProduct = routeState?.product
   const entrySource = routeState?.source
+  const returnTo = routeState?.returnTo
   const food = scannedProduct ?? sampleFoods.find((f) => f.id === foodId) ?? sampleFoods[0]
 
   const [amount, setAmount] = useState(food.servingSize)
@@ -39,6 +40,25 @@ export function FoodDetailPage() {
   }
 
   const handleAddToLog = useCallback(() => {
+    if (returnTo === 'recipe-builder') {
+      navigate('/recipes/new', {
+        state: {
+          scannedProduct: {
+            name: food.name,
+            amount,
+            unit,
+            calories: scaled.calories,
+            protein: scaled.protein,
+            carbs: scaled.carbs,
+            fat: scaled.fat,
+            imageUrl: food.imageUrl,
+          },
+        },
+        replace: true,
+      })
+      return
+    }
+
     const entry = {
       id: crypto.randomUUID(),
       foodId: food.id,
@@ -59,7 +79,7 @@ export function FoodDetailPage() {
     addEntry(entry)
     setActiveDate(new Date().toISOString().slice(0, 10))
     navigate('/', { replace: true })
-  }, [food, amount, unit, scaled, selectedMeal, addEntry, setActiveDate, navigate, entrySource])
+  }, [food, amount, unit, scaled, selectedMeal, addEntry, setActiveDate, navigate, entrySource, returnTo])
 
   const handleToggleFavorite = useCallback(() => {
     const newFavs = favorites.includes(food.id)
@@ -153,7 +173,7 @@ export function FoodDetailPage() {
               flex items-center justify-center gap-2 shadow-lg active:scale-95 duration-200 transition-all cursor-pointer"
           >
             <span className="material-symbols-outlined">add_circle</span>
-            Add to Log
+            {returnTo === 'recipe-builder' ? 'Add to Recipe' : 'Add to Log'}
           </button>
         </div>
       </div>

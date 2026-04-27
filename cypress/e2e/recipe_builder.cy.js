@@ -1,32 +1,46 @@
 /// <reference types="cypress" />
 
 describe('Recipe Builder', () => {
+  // Helper: add an ingredient via the picker sheet manual entry form
+  function addIngredientViaManual(name, calories) {
+    cy.contains('+ Add Ingredient').click({ force: true })
+    cy.contains('Enter Manually').click({ force: true })
+    cy.get('input[placeholder="e.g. Chicken Breast"]').clear().type(name, { force: true })
+    cy.get('input[placeholder="e.g. 250"]').clear().type(calories, { force: true })
+    cy.contains('button', 'Save Ingredient').click({ force: true })
+    // Wait for sheet close animation
+    cy.wait(300)
+  }
+
   describe('Happy path', () => {
     it('can enter a recipe name', () => {
       cy.visit('/recipes/new')
+      cy.wait(300)
       cy.get('input[placeholder="Enter recipe name..."]')
         .clear()
         .type('My Smoothie')
         .should('have.value', 'My Smoothie')
     })
 
-    it('auto-initializes with demo ingredients', () => {
+    it('starts with blank form', () => {
       cy.visit('/recipes/new')
+      cy.wait(300)
       cy.get('input[placeholder="Enter recipe name..."]')
-        .should('have.value', 'Garden Pesto Pasta')
-      // Should have 3 ingredients pre-loaded
-      cy.contains(/^\d+ items$/).should('be.visible')
+        .should('have.value', '')
+      // No ingredients pre-loaded
+      cy.contains('0 items').should('be.visible')
     })
 
     it('adds a new ingredient when + Add Ingredient clicked', () => {
       cy.visit('/recipes/new')
-      cy.contains('+ Add Ingredient').click()
-      // Ingredient count should increment from initial 3
-      cy.contains(/^\d+ items$/).invoke('text').should('not.eq', '3 items')
+      addIngredientViaManual('Chicken Breast', '250')
+      // Ingredient count should increment from 0 to 1
+      cy.contains('1 items').should('be.visible')
     })
 
-    it('calculates total calories from ingredients', () => {
+    it('calculates total calories after adding ingredient', () => {
       cy.visit('/recipes/new')
+      addIngredientViaManual('Chicken Breast', '250')
       // Totals card should appear with a kcal value
       cy.contains('Total Calories').should('be.visible')
       cy.contains('kcal').should('be.visible')
@@ -62,17 +76,21 @@ describe('Recipe Builder', () => {
 
     it('treats missing calorie fields as 0', () => {
       cy.visit('/recipes/new')
-      // The auto-init ingredients all have valid calories, so this is about
-      // verifying totals are numbers, not NaN
-      cy.contains('kcal').invoke('text').then((text) => {
-        const cals = parseInt(text.replace(/[^0-9]/g, ''))
-        expect(cals).to.be.a('number')
-        expect(isNaN(cals)).to.be.false
-      })
+      // Open picker, go to manual form, skip calories
+      cy.contains('+ Add Ingredient').click({ force: true })
+      cy.contains('Enter Manually').click({ force: true })
+      cy.get('input[placeholder="e.g. Chicken Breast"]').clear().type('Test Food', { force: true })
+      // Click Add Ingredient - should be blocked by validation (calories required)
+      cy.contains('button', 'Save Ingredient').click({ force: true })
+      // Validation error should appear
+      cy.contains('Calories must be greater than 0').should('be.visible')
     })
 
     it('recalculates total after removing an ingredient', () => {
       cy.visit('/recipes/new')
+      // Add two ingredients so removing one leaves the totals card visible
+      addIngredientViaManual('Chicken Breast', '250')
+      addIngredientViaManual('Rice', '200')
       cy.contains('Total Calories').should('be.visible')
       // Get initial kcal value
       cy.contains('Total Calories')

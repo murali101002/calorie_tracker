@@ -1,18 +1,30 @@
 import { useState, useCallback, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { PageShell } from '../../layout/PageShell'
 import { IngredientCard } from '../../shared/IngredientCard'
+import { IngredientPickerSheet } from './IngredientPickerSheet'
 import { useRecipeStore } from '../../../stores/useRecipeStore'
-import { sampleFoods } from '../../../data/sampleFoods'
 import type { Ingredient } from '../../../types'
 
 function generateId(): string {
   return crypto.randomUUID()
 }
 
+interface ScannedProductData {
+  name: string
+  amount: number
+  unit: string
+  calories: number
+  protein: number
+  carbs: number
+  fat: number
+  imageUrl: string
+}
+
 export function RecipeBuilderPage() {
   const { recipeId } = useParams<{ recipeId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const recipes = useRecipeStore((s) => s.recipes)
   const addRecipe = useRecipeStore((s) => s.addRecipe)
   const updateRecipe = useRecipeStore((s) => s.updateRecipe)
@@ -24,6 +36,7 @@ export function RecipeBuilderPage() {
   const [name, setName] = useState(existing?.name ?? '')
   const [ingredients, setIngredients] = useState<Ingredient[]>(existing?.ingredients ?? [])
   const [recipeSavedId] = useState<string | null>(existing?.id ?? null)
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   // Sync when editing
   useEffect(() => {
@@ -33,29 +46,29 @@ export function RecipeBuilderPage() {
     }
   }, [recipeId])
 
-  // Auto-init demo recipe for new
+  // Handle incoming scanned product from scan/search flow
   useEffect(() => {
-    if (!isEditing && ingredients.length === 0) {
-      setName('Garden Pesto Pasta')
-      setIngredients([
+    const state = location.state as { scannedProduct?: ScannedProductData } | null
+    if (state?.scannedProduct) {
+      const p = state.scannedProduct
+      setIngredients((prev) => [
+        ...prev,
         {
-          id: generateId(), name: 'Whole Wheat Pasta', amount: 100, unit: 'g',
-          calories: 350, protein: 12, carbs: 70, fat: 2,
-          imageUrl: 'https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=100&h=100&fit=crop',
-        },
-        {
-          id: generateId(), name: 'Basil Pesto', amount: 30, unit: 'g',
-          calories: 120, protein: 3, carbs: 3, fat: 12,
-          imageUrl: 'https://images.unsplash.com/photo-1511739001486-6bf2477cda34?w=100&h=100&fit=crop',
-        },
-        {
-          id: generateId(), name: 'Cherry Tomatoes', amount: 50, unit: 'g',
-          calories: 15, protein: 0.5, carbs: 3, fat: 0.1,
-          imageUrl: 'https://images.unsplash.com/photo-1567306226416-28f0ec9d71f1?w=100&h=100&fit=crop',
+          id: generateId(),
+          name: p.name,
+          amount: p.amount,
+          unit: p.unit,
+          calories: p.calories,
+          protein: p.protein,
+          carbs: p.carbs,
+          fat: p.fat,
+          imageUrl: p.imageUrl,
         },
       ])
+      // Clear location state so it doesn't re-add on remount
+      navigate(location.pathname, { replace: true, state: {} })
     }
-  }, [])
+  }, [location.state, location.pathname, navigate])
 
   const totals = ingredients.reduce(
     (acc, ing) => ({
@@ -67,18 +80,25 @@ export function RecipeBuilderPage() {
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   )
 
-  const handleAddIngredient = useCallback(() => {
-    const food = sampleFoods[Math.floor(Math.random() * sampleFoods.length)]
-    setIngredients((prev) => [
-      ...prev,
-      {
-        id: generateId(), name: food.name, amount: food.servingSize,
-        unit: String(food.servingUnit), calories: food.calories,
-        protein: food.protein, carbs: food.carbs, fat: food.fat,
-        imageUrl: food.imageUrl,
-      },
-    ])
-  }, [])
+  const handleAddManual = useCallback(
+    (ing: { name: string; amount: number; unit: string; calories: number; protein: number; carbs: number; fat: number }) => {
+      setIngredients((prev) => [
+        ...prev,
+        {
+          id: generateId(),
+          name: ing.name,
+          amount: ing.amount,
+          unit: ing.unit,
+          calories: ing.calories,
+          protein: ing.protein,
+          carbs: ing.carbs,
+          fat: ing.fat,
+          imageUrl: '',
+        },
+      ])
+    },
+    [],
+  )
 
   const handleRemove = useCallback((ingredientId: string) => {
     if (recipeSavedId && isEditing) {
@@ -145,7 +165,7 @@ export function RecipeBuilderPage() {
 
           <button
             type="button"
-            onClick={handleAddIngredient}
+            onClick={() => setPickerOpen(true)}
             className="w-full py-4 border-2 border-dashed border-outline-variant rounded-xl
               flex items-center justify-center gap-2 text-outline
               hover:text-primary-container hover:border-primary-container transition-all
@@ -206,6 +226,12 @@ export function RecipeBuilderPage() {
           Save Recipe
         </button>
       </div>
+
+      <IngredientPickerSheet
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onAddManual={handleAddManual}
+      />
     </PageShell>
   )
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { DetailTopNav } from '../../layout/DetailTopNav'
 import { ManualEntrySheet } from '../daily-log/ManualEntrySheet'
 import { mapOpenFoodFacts } from '../../../utils/mapOpenFoodFacts'
@@ -13,6 +13,8 @@ interface SearchResult {
 
 export function SearchPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const inputRef = useRef<HTMLInputElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
@@ -83,7 +85,7 @@ export function SearchPage() {
   }, [query, doSearch])
 
   function handleSelect(product: FoodProduct) {
-    navigate('/food-detail', { state: { product } })
+    navigate('/food-detail', { state: { product, returnTo } })
   }
 
   const handleAiEstimate = useCallback(async () => {
@@ -293,7 +295,7 @@ export function SearchPage() {
               type="button"
               onClick={() =>
                 navigate('/food-detail', {
-                  state: { product: aiProduct, source: 'ai_estimate' },
+                  state: { product: aiProduct, source: 'ai_estimate', returnTo },
                 })
               }
               className="w-full bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-4 active:scale-[0.98] transition-all text-left"

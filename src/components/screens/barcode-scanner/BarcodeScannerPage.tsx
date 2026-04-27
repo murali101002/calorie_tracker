@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Html5Qrcode } from 'html5-qrcode'
 import { mapOpenFoodFacts } from '../../../utils/mapOpenFoodFacts'
@@ -7,6 +7,8 @@ type ScannerTab = 'barcode' | 'vision' | 'recent'
 
 export function BarcodeScannerPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const [isScanning, setIsScanning] = useState(false)
   const [flashOn, setFlashOn] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -49,7 +51,7 @@ export function BarcodeScannerPage() {
             const json = await res.json()
             if (json.product) {
               const product = mapOpenFoodFacts(json.product)
-              navigate('/food-detail', { state: { product, source: 'barcode' } })
+              navigate('/food-detail', { state: { product, source: 'barcode', returnTo } })
             } else {
               setError('Product not found, try searching manually')
               setTimeout(() => {

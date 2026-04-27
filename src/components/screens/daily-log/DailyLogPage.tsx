@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { PageShell } from '../../layout/PageShell'
 import { DateNavigator } from './DateNavigator'
 import { CaloriesRemainingCard } from './CaloriesRemainingCard'
 import { MealSection } from './MealSection'
 import { DatePickerModal } from '../../shared/DatePickerModal'
 import { ManualEntrySheet } from './ManualEntrySheet'
+import { EditEntrySheet } from './EditEntrySheet'
 import { useFoodLogStore } from '../../../stores/useFoodLogStore'
 import { useDailyProgress } from '../../../hooks/useDailyProgress'
 import type { MealType, DailyLogEntry } from '../../../types'
@@ -15,16 +15,15 @@ function toDateKey(date: Date): string {
 }
 
 export function DailyLogPage() {
-  const navigate = useNavigate()
   const activeDate = useFoodLogStore((s) => s.activeDate)
   const setActiveDate = useFoodLogStore((s) => s.setActiveDate)
   const getEntriesByMeal = useFoodLogStore((s) => s.getEntriesByMeal)
-  const getEntriesForDate = useFoodLogStore((s) => s.getEntriesForDate)
   const entries = useFoodLogStore((s) => s.entries)
   const progress = useDailyProgress(activeDate)
 
   const [showCalendar, setShowCalendar] = useState(false)
   const [sheetMeal, setSheetMeal] = useState<MealType | null>(null)
+  const [editingEntry, setEditingEntry] = useState<DailyLogEntry | null>(null)
 
   useEffect(() => {
     const state = useFoodLogStore.getState()
@@ -100,10 +99,7 @@ export function DailyLogPage() {
             mealType={meal}
             entries={getEntriesByMeal(activeDate, meal)}
             onAdd={() => setSheetMeal(meal)}
-            onEntryClick={(id) => {
-              const entry = getEntriesForDate(activeDate).find((e) => e.id === id)
-              if (entry) navigate(`/food/${entry.foodId}`)
-            }}
+            onEdit={setEditingEntry}
           />
         ))}
       </div>
@@ -121,6 +117,13 @@ export function DailyLogPage() {
         open={sheetMeal !== null}
         mealType={sheetMeal ?? 'breakfast'}
         onClose={() => setSheetMeal(null)}
+      />
+
+      <EditEntrySheet
+        open={editingEntry !== null}
+        entry={editingEntry}
+        date={activeDate}
+        onClose={() => setEditingEntry(null)}
       />
     </PageShell>
   )
