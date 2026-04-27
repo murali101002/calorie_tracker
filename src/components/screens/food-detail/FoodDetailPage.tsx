@@ -14,6 +14,7 @@ export function FoodDetailPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const addEntry = useFoodLogStore((s) => s.addEntry)
+  const setActiveDate = useFoodLogStore((s) => s.setActiveDate)
   const goals = useUserStore((s) => s.goals)
   const updateSettings = useUserStore((s) => s.updateSettings)
   const favorites = useUserStore((s) => s.settings.favoriteProducts)
@@ -56,8 +57,9 @@ export function FoodDetailPage() {
       source: entrySource,
     }
     addEntry(entry)
+    setActiveDate(new Date().toISOString().slice(0, 10))
     navigate('/', { replace: true })
-  }, [food, amount, unit, scaled, selectedMeal, addEntry, navigate, entrySource])
+  }, [food, amount, unit, scaled, selectedMeal, addEntry, setActiveDate, navigate, entrySource])
 
   const handleToggleFavorite = useCallback(() => {
     const newFavs = favorites.includes(food.id)
