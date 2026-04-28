@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { DetailTopNav } from '../../layout/DetailTopNav'
 import { ManualEntrySheet } from '../daily-log/ManualEntrySheet'
-import { mapEdamamHint } from '../../../utils/mapEdamam'
+import { mapUSDAFood } from '../../../utils/mapUSDA'
 import { getAiNutritionEstimate, aiEstimateToFoodProduct } from '../../../utils/aiNutrition'
 import type { FoodProduct } from '../../../types'
 
@@ -10,6 +10,9 @@ interface SearchResult {
   product: FoodProduct
   hasNutrition: boolean
 }
+
+// In-memory search cache — survives component remounts, clears on page refresh
+const searchCache = new Map<string, SearchResult[]>()
 
 export function SearchPage() {
   const navigate = useNavigate()
@@ -58,11 +61,19 @@ export function SearchPage() {
     setAiProduct(null)
     setAiError(null)
 
-    const appId = import.meta.env.VITE_EDAMAMA_APP_ID as string
-    const appKey = import.meta.env.VITE_EDAMAMA_APP_KEY as string
+    // Check cache first
+    const cacheKey = term.trim().toLowerCase()
+    const cached = searchCache.get(cacheKey)
+    if (cached) {
+      setResults(cached)
+      setLoading(false)
+      return
+    }
 
-    if (!appId || !appKey) {
-      setError('Edamam API not configured. Add VITE_EDAMAMA_APP_ID and VITE_EDAMAMA_APP_KEY to your .env file.')
+    const apiKey = import.meta.env.VITE_USDA_API_KEY as string
+
+    if (!apiKey) {
+      setError('USDA API key not configured. Get a free key at https://fdc.nal.usda.gov/api-key-signup.html')
       setResults([])
       setLoading(false)
       return
@@ -70,18 +81,30 @@ export function SearchPage() {
 
     try {
       const res = await fetch(
-        `https://api.edamam.com/api/food-database/v2/parser?app_id=${encodeURIComponent(appId)}&app_key=${encodeURIComponent(appKey)}&ingr=${encodeURIComponent(term)}`,
-        { signal: controller.signal },
+        `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${encodeURIComponent(apiKey)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: term,
+            dataType: ['Foundation', 'SR Legacy', 'Branded'],
+            pageSize: 20,
+          }),
+          signal: controller.signal,
+        },
       )
       if (!res.ok) throw new Error('Network error')
       const json = await res.json()
 
-      const hints = (json.hints ?? []) as Record<string, unknown>[]
+      const foods = (json.foods ?? []) as Record<string, unknown>[]
 
-      const results: SearchResult[] = hints.map((raw) => {
-        const product = mapEdamamHint(raw as any)
+      const results: SearchResult[] = foods.map((raw) => {
+        const product = mapUSDAFood(raw as any)
         return { product, hasNutrition: product.calories > 0 }
       })
+
+      // Cache results
+      searchCache.set(cacheKey, results)
 
       setResults(results)
     } catch (err: unknown) {
